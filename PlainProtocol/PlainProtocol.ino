@@ -77,20 +77,24 @@ void setup() {
 
 void loop() {
   
-  
+  //Receive frame from serial. This function should be put in the loop and called periodically as following:
   if (mytest.receiveFrame()) {
+    //if the received command is "speed", do the "speed" process. 
     if (mytest.receivedCommand=="speed") {
-      //speed process
-      
+      //the "speed" process
+      //the received command, the type is "Class String"
       Serial1.println(mytest.receivedCommand);
+      //the Lenth of received Content 
       Serial1.println(mytest.receivedContentLenth);
       for (int i=0; i<mytest.receivedContentLenth; i++) {
+        //the received content in an array
         Serial1.println(mytest.receivedContent[i]);
       }
       Serial1.println();
     }
     else if (mytest.receivedCommand=="torque"){
       //torque process
+      //the same as above
       Serial1.println(mytest.receivedCommand);
       Serial1.println(mytest.receivedContentLenth);
       for (int i=0; i<mytest.receivedContentLenth; i++) {
@@ -100,6 +104,7 @@ void loop() {
 
     }
     else{
+      //no matching command
       Serial1.println("command not available");
     }
   }
@@ -107,17 +112,18 @@ void loop() {
   
   
   static unsigned long loopTimer=millis();
-  
+  //send the frame
   if (millis()-loopTimer>100) {
     loopTimer=millis();
     
     //the following two function do the same thing
     mytest.sendFrame("<speed>,56,93,812;");
-    mytest.sendFrame("speed"/*sendingCommand*/,3/*sendingContentLenth*/,56,93,812/*three sendingContent*/);
+    mytest.sendFrame("speed"/*sendingCommand*/,3/*sendingContentLenth*/,56,93,812/*three sendingContent, int only*/);
+
     
     //the following two function do the same thing
     mytest.sendFrame("#3<speed>,56,93;");
-    mytest.sendFrame(3/*sendingAddress*/,"speed"/*sendingCommand*/,2/*sendingContentLenth*/,56,93/*two sendingContent*/);
+    mytest.sendFrame(3/*sendingAddress*/,"speed"/*sendingCommand*/,2/*sendingContentLenth*/,56,93/*two sendingContent, int only*/);
     
     //the following three function do the same thing
     mytest.sendFrame("<speed>;");

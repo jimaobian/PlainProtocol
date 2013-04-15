@@ -12,8 +12,26 @@
 
   References
   ----------------------------------
+  This is a plain protocol for DFRobot
+  
+                                    PlainProtocol Frame
+ |----------------------------------------------------------|-------------------------------|
+ |  <Command>Content;                                       | <speed>100;                   |
+ |----------------------------------------------------------|-------------------------------|
+ |  <Command>Content1,Content2;                             | <speed>100,200;               |
+ |----------------------------------------------------------|-------------------------------|
+ |  <Command1>Content1;<Command2>Content2;                  | <speed>100; <direction>100;   |
+ |----------------------------------------------------------|-------------------------------|
+ |  #Address<Command>Content;                               | #1<speed>100;                 |
+ |----------------------------------------------------------|-------------------------------|
+ |  #Address<Command>Content1,Content2;                     | #1<speed>100,200;             |
+ |----------------------------------------------------------|-------------------------------|
+ |  #Address1<Command1>Content1;#Address2<Command2>Content2;| #1<speed>100;#2<direction>100;|
+ |----------------------------------------------------------|-------------------------------|
 
 
+  for more details please view the example file: PlainProtocol.ino
+  It will show how to use this library.
 
   embedXcode
   ----------------------------------
@@ -22,3 +40,7 @@
   Licence CC = BY NC SA
   http://embedXcode.weebly.com/
 
+
+  
+
+  

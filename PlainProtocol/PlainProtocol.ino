@@ -1,7 +1,7 @@
 /// 
 /// @mainpage	PlainProtocol 
 ///
-/// @details	<#details#>
+/// @details	DFRobot PlainProtocol for arduino
 /// @n 
 /// @n 
 /// @n @a	Developed with [embedXcode](http://embedXcode.weebly.com)
@@ -9,7 +9,7 @@
 /// @author	qiao
 /// @author	qiao
 /// @date	13-4-2 上午9:17
-/// @version	<#version#>
+/// @version	1.0
 /// 
 /// @copyright	© qiao, 2013年
 /// @copyright	CC = BY NC SA
@@ -22,13 +22,13 @@
 /// @file	PlainProtocol.ino 
 /// @brief	Main sketch
 ///
-/// @details	<#details#>
+/// @details	test program for PlainProtocol
 /// @n @a	Developed with [embedXcode](http://embedXcode.weebly.com)
 /// 
 /// @author	qiao
 /// @author	qiao
 /// @date	13-4-2 上午9:17
-/// @version	<#version#>
+/// @version	1.0
 /// 
 /// @copyright	© qiao, 2013年
 /// @copyright	CC = BY NC SA
@@ -37,6 +37,9 @@
 /// @n
 ///
 
+#ifndef ARDUINO
+#define ARDUINO 103
+#endif
 
 // Core library for code-sense
 #if defined(WIRING) // Wiring specific
@@ -60,50 +63,71 @@
 #endif
 
 // Include application, user and local libraries
-#include "LocalLibrary.h"
-
-// Define variables and constants
-///
-/// @brief	Name of the LED
-/// @details	Each board has a LED but connected to a different pin
-///
-uint8_t myLED;
+#include "PlainProtocol.h"
 
 
-///
-/// @brief	Setup
-/// @details	Define the pin the LED is connected to
-///
-// Add setup code 
+PlainProtocol mytest;
+
+
+
 void setup() {
-  // myLED pin number
-#if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega32U4__) || defined(__SAM3X8E__) // Arduino specific 
-  myLED = 13; 
-#elif defined(__PIC32MX__) // chipKIT specific
-  myLED = 13;
-#elif defined(__AVR_ATtinyX5__) // Digispark specific
-    myLED = 1; // assuming model A
-#elif defined(__AVR_ATmega644P__) // Wiring specific
-  myLED = 15; 
-#elif defined(__MSP430G2452__) || defined(__MSP430G2553__) || defined(__MSP430G2231__) || defined(__MSP430FR5739__) // LaunchPad and FraunchPad specific
-  myLED = RED_LED; 
-#elif defined(__LM4F120H5QR__) // StellarPad specific
-  myLED = RED_LED;
-#elif defined(MCU_STM32F103RB) || defined(MCU_STM32F103ZE) || defined(MCU_STM32F103CB) || defined(MCU_STM32F103RE) // Maple specific
-  myLED = BOARD_LED_PIN; 
-#elif defined(__MK20DX128__) // Teensy 3.0 specific
-    myLED = 13;
-#endif
-
-  pinMode(myLED, OUTPUT);     
+  mytest.init();
 }
 
-///
-/// @brief	Loop
-/// @details	Call blink
-///
-// Add loop code 
+
 void loop() {
-  blink(myLED, 3, 333);
-  delay(1000);    
+  
+  
+  if (mytest.receiveFrame()) {
+    if (mytest.receivedCommand=="speed") {
+      //speed process
+      
+      Serial1.println(mytest.receivedCommand);
+      Serial1.println(mytest.receivedContentLenth);
+      for (int i=0; i<mytest.receivedContentLenth; i++) {
+        Serial1.println(mytest.receivedContent[i]);
+      }
+      Serial1.println();
+    }
+    else if (mytest.receivedCommand=="torque"){
+      //torque process
+      Serial1.println(mytest.receivedCommand);
+      Serial1.println(mytest.receivedContentLenth);
+      for (int i=0; i<mytest.receivedContentLenth; i++) {
+        Serial1.println(mytest.receivedContent[i]);
+      }
+      Serial1.println();
+
+    }
+    else{
+      Serial1.println("command not available");
+    }
+  }
+  
+  
+  
+  static unsigned long loopTimer=millis();
+  
+  if (millis()-loopTimer>100) {
+    loopTimer=millis();
+    
+    //the following two function do the same thing
+    mytest.sendFrame("<speed>,56,93,812;");
+    mytest.sendFrame("speed"/*sendingCommand*/,3/*sendingContentLenth*/,56,93,812/*three sendingContent*/);
+    
+    //the following two function do the same thing
+    mytest.sendFrame("#3<speed>,56,93;");
+    mytest.sendFrame(3/*sendingAddress*/,"speed"/*sendingCommand*/,2/*sendingContentLenth*/,56,93/*two sendingContent*/);
+    
+    //the following three function do the same thing
+    mytest.sendFrame("<speed>;");
+    mytest.sendFrame("speed"/*sendingCommand*/);//the string without ';' will deal with command without content
+    mytest.sendFrame("speed"/*sendingCommand*/,0/*sendingContentLenth*/);
+  }
+  
+  
+  
+  
+  
+  
 }
